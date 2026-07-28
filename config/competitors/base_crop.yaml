@@ -1,0 +1,69 @@
+output_dir_folder: /home/mena/results/co_missing/competitors
+input_dir_folder: /misc/glm1/person/mena/pixel_data
+#additional_method_name: -TCNN
+
+load_memory: True
+data_name: cropharvest_multi
+
+sequential_flag: True
+
+training: 
+  max_epochs: 2
+  batch_size: 128
+  emb_dim: 128 
+  early_stop_args: 
+    min_delta: 0.01
+    mode: min
+    patience: 5
+    verbose: True
+  parallel_processes: 1 #this value will divide the total number of cpus to calcualte num_workers
+
+  additional_args:
+    optimizer: adam
+    lr: 0.001
+
+experiment: 
+  runs_seed: [10] # [10, 123, 3000, 5, 5123] #repetitions
+  kfolds: 10
+  preprocess: 
+    fillnan: False
+    flatten: False
+    form: zscore  
+    view_names: ["S2_S2VI","S1","weather", "DEM"]
+  
+
+architecture:
+  encoders: 
+    S1:
+      model_type: tempcnn
+      dropout: 0.2
+      kernel_size: 5 #default value: 5
+      layer_size: 128 #default value: 128
+      n_layers: 2 #default value: 3
+      seq_len: 12
+      use_norm: False
+    S2_S2VI: 
+      model_type: tempcnn
+      dropout: 0.2
+      kernel_size: 5 #default value: 5
+      layer_size: 128 #default value: 128
+      n_layers: 2 #default value: 3
+      seq_len: 12
+      use_norm: False
+    weather: 
+      model_type: tempcnn
+      dropout: 0.2
+      kernel_size: 5 #default value: 5
+      layer_size: 128 #default value: 128
+      n_layers: 2 #default value: 3
+      seq_len: 12
+      use_norm: False
+    DEM: 
+      model_type: mlp
+      n_layers: 1
+      layer_size: 128
+      dropout: 0.2
+      batchnorm: False
+      use_norm: False
+  predictive_model:
+    model_type: linear
