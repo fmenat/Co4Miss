@@ -1,75 +1,42 @@
-# Multi-modal Co-Learning for Handling Missing Modalities
+# CoMiss & FullCo: Multi-modal Co-Learning for Handling Missing Modalities
+[![paper](https://img.shields.io/badge/arXiv-2607.24683-D12424)](https://www.arxiv.org/abs/2607.24683) 
 
-
-# Training
-
-* For running Full-Co
-`python
-python train.py -s config/ours/fullco_crop.yaml
-`
-
-
-* For running Co-Miss with random version (ModDrop)
-`python
-python train.py -s config/ours/comissv2_crop.yaml
-`
-
-
-* For running Co-Miss default (all missing combinations)
-`python
-python train.py -s config/ours/comiss_crop.yaml
-`
+> Public repository of our work [*Co-Learning for Missing Arbitrary Modalities in Multi-modal Classification*](https://www.arxiv.org/abs/2607.24683) 
 
 ---
 
-## Competitors
+![missing data](imgs/fullco.png)
 
-### Single view (for dedicated extreme missing training)
+The previous image illustrates our **FullCo** framework in a multi-modal co-learning setting. The objective is to leverage multi-modal co-learning for increasing the robustness of the model to missing modalities at inference time.
 
-* For running Single-modality baselines
-`python
-python train_pool.py -s config/competitors/base_crop.yaml
-`
 
-* For running DML method
-`python
-python train_pool.py -s config/competitors/dml_crop.yaml
-`
+## Training
+We provide config file examples on how to train our model with different settings.
 
-* For running MLA method
-`python
-python train_pool.py -s config/competitors/mla_crop.yaml
-`
+* To train the FullCo method in the Multi-CropHarvest dataset, run:  
+```
+python train.py -s config/ours/fullco_crop.yaml
+```
+* To train the CoMiss method (with a single random missing modality case) in the Multi-CropHarvest dataset, run:  
+```
+python train.py -s config/ours/comissv2_crop.yaml
+```
+* To train the CoMiss method (default: all missing modality combinaons) in the Multi-CropHarvest dataset, run:  
+```
+python train.py -s config/ours/comiss_crop.yaml
+```
+For other datasets you can check the other config files in the  [config folder](./config).
 
-### For any type of missing view
 
-* For running FCoM-* methods
-`python
-python train_multi.py -s config/competitors/fcom_crop.yaml
-`
+## Evaluation
+![missing data](imgs/missing_cases.png)
 
-* For running EmbraceNet method
-`python
-python train_multi.py -s config/competitors/embr_crop.yaml
-`
+* To evaluate the predictive performance run:
+```
+python evaluate.py -s config/eval.yaml
+```
+All details to folder paths and configurations are inside the yaml files.
 
-* For running ShaSpec method
-`python
-python train_multi.py -s config/competitors/shaspec_crop.yaml
-`
 
-* For running DModDrop-CML method
-`python
-python train_multi.py -s config/competitors/cml_crop.yaml
-`
-
-* For running MissModal method
-`python
-python train_multi.py -s config/competitors/missmodal_crop.yaml
-`
-
-* For running DSensD+ EO-specific method
-`python
-python train_multi.py -s config/competitors/dsensd_crop.yaml
-`
+---
 

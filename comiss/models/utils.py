@@ -76,14 +76,3 @@ def get_dic_emb_dims(encoders: Dict[str,torch.nn.Module], emb_dims: Union[int, L
                 raise Exception("if the encoders do not have the method 'get_output_size', please indicate it on the init of this class, as emb_dims=list or int")
     return return_emb_dims 
 
-def map_encoders(encoders: Union[List[torch.nn.Module],Dict[str,torch.nn.Module]], view_names: List[str] = []) -> dict:
-    if type(encoders) == list: 
-        if len(view_names) == 0:
-            view_names = [f"S{i}" for i in range(1, 1+len(encoders))]     
-        if len(view_names) !=  len(encoders):
-            raise Exception("view names is not from the same size as encoder list")
-        encoders = {v_name: encoders[i] for i,v_name in enumerate(view_names)}
-    elif type(encoders) != dict:
-        raise Exception("Encoders must be a dict or list")
-    return encoders
-

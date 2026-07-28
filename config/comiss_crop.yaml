@@ -1,0 +1,117 @@
+output_dir_folder: path to storage results
+input_dir_folder: path to input data
+additional_method_name: -CoMiss
+
+load_memory: True
+data_name: cropharvest_multi
+
+method: 
+  agg_args:
+    mode: avg
+    #mode: concat
+    #adaptive: True
+    #feature: False #it can also be per feature
+
+training: 
+  return_rep: False
+  parallel_processes: 2 #this value will divide the total number of cpus to calcualte num_workers
+  max_epochs: 1000
+  batch_size: 128
+  emb_dim: 128 
+  monitor_metric: f1we_avg
+  early_stop_args: 
+    min_delta: 0.001
+    mode: max
+    patience: 5
+    verbose: True
+
+  missing_as_aug: True
+  missing_method:
+    missing_random: False
+    name: I #just for naming
+
+  additional_args:
+    weights_loss: 
+      #fused-prediction
+      main_pred: 1 #full view prediction
+      
+      #co-learning feature
+      shared: [ contrastive_vol, 1] #contrastive volume #contrastive_pairs
+      specific: [ modality_disc, 1 ] #modality discriminator
+      contrastive_temp: 0.07
+      
+      #co-learning decision
+      decision: [ missing_distillation, 1]
+      distillation_temp: 0.5
+      distillation_weight: 1.0  #inside the computation it already calculates temp**2
+      
+    optimizer: adamw
+    lr: 0.001
+    
+experiment: 
+  runs_seed: [10, 3000] #repetitions
+  kfolds: 10
+  preprocess: 
+    fillnan: False
+    flatten: False
+    form: zscore  
+    view_names: ["S2_S2VI","S1","weather", "DEM"]
+
+args_forward: #only for testing
+  list_testing_views: [
+    #single view predictions
+    [ ["S2_S2VI"], [1.00] ] , 
+    [ ["S1"], [1.00] ] , 
+    [ ["weather"], [1.00] ] , 
+    [ ["DEM"], [1.00] ] , 
+    #two-view prediction
+    [ ["S2_S2VI", "S1"], [1.0] ] ,
+    [ ["S2_S2VI", "weather"], [1.0] ] ,
+    [ ["S2_S2VI", "DEM"], [1.0] ] ,
+    [ ["S1", "weather"], [1.0] ] ,
+    [ ["S1", "DEM"], [1.0] ] ,
+    [ ["weather", "DEM"], [1.0] ] ,
+    #three-view prediction
+    [ ["S2_S2VI", "weather", "DEM"], [1.0] ], #multi-view prediction
+    [ ["S2_S2VI", "S1", "DEM"], [1.0] ], #multi-view prediction
+    [ ["S2_S2VI", "S1", "weather"], [1.0] ], #multi-view prediction
+    [ ["S1", "weather", "DEM"], [1.00] ], #only missing S2 in different rates
+  ]
+  
+architecture:
+  encoders: 
+    S1:
+      model_type: tempcnn
+      dropout: 0.2
+      kernel_size: 5 #default value: 5
+      layer_size: 128 #default value: 128
+      n_layers: 2 #default value: 3
+      seq_len: 12
+      use_norm: False
+    S2_S2VI: 
+      model_type: tempcnn
+      dropout: 0.2
+      kernel_size: 5 #default value: 5
+      layer_size: 128 #default value: 128
+      n_layers: 2 #default value: 3
+      seq_len: 12
+      use_norm: False
+    weather: 
+      model_type: tempcnn
+      dropout: 0.2
+      kernel_size: 5 #default value: 5
+      layer_size: 128 #default value: 128
+      n_layers: 2 #default value: 3
+      seq_len: 12
+      use_norm: False
+    DEM: 
+      model_type: mlp
+      n_layers: 1
+      layer_size: 128
+      dropout: 0.2
+      batchnorm: False
+      use_norm: False
+  predictive_model:
+    model_type: linear
+
+    use_norm_last: True

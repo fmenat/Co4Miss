@@ -1,0 +1,10 @@
+output_dir_folder:  path to storage results
+
+input_dir_folder: path to input data
+
+data_name: cropharvest_multi
+#data_name: opport_HL_train
+
+methods_to_plot: null #consider all
+
+load_memory: True

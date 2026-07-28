@@ -1,0 +1,210 @@
+output_dir_folder: path to storage results
+input_dir_folder: path to input data
+additional_method_name: -FullCo
+
+load_memory: True
+data_name: opport_HL_train
+
+method: 
+  agg_args:
+    mode: avg
+    #mode: concat
+    #adaptive: True
+    #feature: False #it can also be per feature
+
+training: 
+  return_rep: False
+  parallel_processes: 2 #this value will divide the total number of cpus to calcualte num_workers
+  max_epochs: 1000
+  batch_size: 256
+  emb_dim: 128 
+  monitor_metric: f1we_avg
+  early_stop_args: 
+    min_delta: 0.001
+    mode: max
+    patience: 5
+    verbose: True
+
+  missing_as_aug: False
+
+  additional_args:
+    weights_loss: 
+      #fused-prediction
+      main_pred: 1 #full view prediction
+      
+      #co-learning feature
+      shared: [ contrastive_vol, 1]
+      specific: [ modality_disc, 1 ] 
+      contrastive_temp: 0.07
+      
+      #co-learning decision
+      decision: [ mutual_distillation, 1] 
+      distillation_temp: 0.5
+      distillation_weight: 1.0  #inside the computation it already calculates temp**2
+      
+    optimizer: adamw
+    lr: 0.001
+    
+
+experiment: 
+  runs_seed: [10, 5, 5123] #repetitions
+  preprocess: 
+    fillnan: True
+    flatten: False
+    form: zscore  
+    view_names: ['R-SHOE', 'L-SHOE', 'IMUBACK', 'RLA', 'RUA', 'LUA', 'LLA', 'RKN_', 'RKN^', 'HIP', 'RH', 'RWR', 'RUA_', 'RUA^', 'ACCELBACK', 'LUA_', 'LUA^', 'LWR', 'LH']
+
+args_forward: #only for testing
+  list_testing_views: [
+    #single view predictions
+    [ ['R-SHOE'], [1.00] ] ,
+    [ ['L-SHOE'], [1.00] ] ,
+    [ ['IMUBACK'], [1.00] ] ,
+    [ ['RLA'], [1.00] ] ,
+    [ ['RUA'], [1.00] ] ,
+    [ ['LUA'], [1.00] ] ,
+    [ ['LLA'], [1.00] ] ,
+    [ ['RKN_'], [1.00] ] ,
+    [ ['RKN^'], [1.00] ] ,
+    [ ['HIP'], [1.00] ] ,
+    [ ['RH'], [1.00] ] ,
+    [ ['RWR'], [1.00] ] ,
+    [ ['RUA_'], [1.00] ] ,
+    [ ['RUA^'], [1.00] ] ,
+    [ ['ACCELBACK'], [1.00] ] ,
+    [ ['LUA_'], [1.00] ] ,
+    [ ['LUA^'], [1.00] ] ,
+    [ ['LWR'], [1.00] ] ,
+    [ ['LH'], [1.00] ] ,
+    #5 random cases of two-view predictions
+    [ ['R-SHOE', 'L-SHOE'], [1.00] ] ,
+    [ ['IMUBACK', 'RLA'], [1.00] ] ,
+    [ ['RUA', 'LUA'], [1.00] ] ,
+    [ ['RKN_', 'RKN^'], [1.00] ] ,
+    [ ['RH', 'RWR'], [1.00] ] ,
+    #5 random cases of three-view predictions
+    [ ['R-SHOE', 'L-SHOE', 'IMUBACK'], [1.00] ] ,
+    [ ['RLA', 'RUA', 'LUA'], [1.00] ] ,
+    [ ['LLA', 'RKN_', 'RKN^'], [1.00] ] ,
+    [ ['HIP', 'RH', 'RWR'], [1.00] ] ,
+    [ ['RUA_', 'RUA^', 'ACCELBACK'], [1.00] ] ,
+    #5 random cases of four-view predictions
+    [ ['R-SHOE', 'L-SHOE', 'IMUBACK', 'RLA'], [1.00] ] ,
+    [ ['RUA', 'LUA', 'LLA', 'RKN_'], [1.00] ] ,
+    [ ['RKN^', 'HIP', 'RH', 'RWR'], [1.00] ] ,
+    [ ['RUA_', 'RUA^', 'ACCELBACK', 'LUA_'], [1.00] ] ,
+    [ ['LUA^', 'LWR', 'LH', 'R-SHOE'], [1.00] ] ,
+    #5 random cases of five-view predictions
+    [ ['R-SHOE', 'L-SHOE', 'IMUBACK', 'RLA', 'RUA'], [1.00] ] ,
+    [ ['LUA', 'LLA', 'RKN_', 'RKN^', 'HIP'], [1.00] ] ,
+    [ ['RH', 'RWR', 'RUA_', 'RUA^', 'ACCELBACK'], [1.00] ] ,
+    [ ['LUA_', 'LUA^', 'LWR', 'LH', 'R-SHOE'], [1.00] ] ,
+    [ ['L-SHOE', 'IMUBACK', 'RLA', 'RUA', 'LUA'], [1.00] ] ,
+    #5 random cases of six-view predictions
+    [ ['R-SHOE', 'L-SHOE', 'IMUBACK', 'RLA', 'RUA', 'LUA'], [1.00] ] ,
+    [ ['LLA', 'RKN_', 'RKN^', 'HIP', 'RH', 'RWR'], [1.00] ] ,
+    [ ['RUA_', 'RUA^', 'ACCELBACK', 'LUA_', 'LUA^', 'LWR'], [1.00] ] ,
+    [ ['LH', 'R-SHOE', 'L-SHOE', 'IMUBACK', 'RLA', 'RUA_'], [1.00] ] ,
+    [ ['LUA', 'LLA', 'RKN_', 'RKN^', 'HIP', 'RH'], [1.00] ] ,
+    #5 random cases of seven-view predictions
+    [ ['R-SHOE', 'L-SHOE', 'IMUBACK', 'RLA', 'RUA', 'LUA', 'LLA'], [1.00] ] ,
+    [ ['RKN_', 'RKN^', 'HIP', 'RH', 'RWR', 'RUA_', 'RUA^'], [1.00] ] ,
+    [ ['ACCELBACK', 'LUA_', 'LUA^', 'LWR', 'LH', 'R-SHOE', 'L-SHOE'], [1.00] ] ,
+    [ ['IMUBACK', 'RLA', 'RUA', 'LUA', 'LLA', 'RKN_', 'RKN^'], [1.00] ] ,
+    [ ['HIP', 'RH', 'RWR', 'RUA_', 'RUA^', 'ACCELBACK', 'LUA_'], [1.00] ] ,
+    #5 random cases of eight-view predictions
+    [ ['R-SHOE', 'L-SHOE', 'IMUBACK', 'RLA', 'RUA', 'LUA', 'LLA', 'RKN_'], [1.00] ] ,
+    [ ['RKN^', 'HIP', 'RH', 'RWR', 'RUA_', 'RUA^', 'ACCELBACK', 'LUA_'], [1.00] ] ,
+    [ ['LUA^', 'LWR', 'LH', 'R-SHOE', 'L-SHOE', 'IMUBACK', 'RLA', 'RUA'], [1.00] ] ,
+    [ ['LUA', 'LLA', 'RKN_', 'RKN^', 'HIP', 'RH', 'RWR', 'RUA_'], [1.00] ] ,
+    [ ['RUA^', 'ACCELBACK', 'LUA_', 'LUA^', 'LWR', 'LH', 'R-SHOE', 'L-SHOE'], [1.00] ] ,
+    #5 random cases of nine-view predictions
+    [ ['R-SHOE', 'L-SHOE', 'IMUBACK', 'RLA', 'RUA', 'LUA', 'LLA', 'RKN_', 'RKN^'], [1.00] ] ,
+    [ ['HIP', 'RH', 'RWR', 'RUA_', 'RUA^', 'ACCELBACK', 'LUA_', 'LUA^', 'LWR'], [1.00] ] ,
+    [ ['LH', 'R-SHOE', 'L-SHOE', 'IMUBACK', 'RLA', 'RUA', 'LUA', 'LLA', 'RKN_'], [1.00] ] ,
+    [ ['RKN^', 'HIP', 'RH', 'RWR', 'RUA_', 'RUA^', 'ACCELBACK', 'LUA_', 'LUA^'], [1.00] ] ,
+    [ ['LWR', 'LH', 'R-SHOE', 'L-SHOE', 'IMUBACK', 'RLA', 'RUA', 'LUA', 'LLA'], [1.00] ] ,
+    #5 random cases of ten-view predictions
+    [ ['R-SHOE', 'L-SHOE', 'IMUBACK', 'RLA', 'RUA', 'LUA', 'LLA', 'RKN_', 'RKN^', 'HIP'], [1.00] ] ,
+    [ ['RH', 'RWR', 'RUA_', 'RUA^', 'ACCELBACK', 'LUA_', 'LUA^', 'LWR', 'LH', 'R-SHOE'], [1.00] ] ,
+    [ ['L-SHOE', 'IMUBACK', 'RLA', 'RUA', 'LUA', 'LLA', 'RKN_', 'RKN^', 'HIP', 'RH'], [1.00] ] ,
+    [ ['RWR', 'RUA_', 'RUA^', 'ACCELBACK', 'LUA_', 'LUA^', 'LWR', 'LH', 'R-SHOE', 'L-SHOE'], [1.00] ] ,
+    [ ['IMUBACK', 'RLA', 'RUA', 'LUA', 'LLA', 'RKN_', 'RKN^', 'HIP', 'RH', 'RWR'], [1.00] ] ,
+    #5 random cases of eleven-view predictions
+    [ ['R-SHOE', 'L-SHOE', 'IMUBACK', 'RLA', 'RUA', 'LUA', 'LLA', 'RKN_', 'RKN^', 'HIP', 'RH'], [1.00] ] ,
+    [ ['RWR', 'RUA_', 'RUA^', 'ACCELBACK', 'LUA_', 'LUA^', 'LWR', 'LH', 'R-SHOE', 'L-SHOE', 'IMUBACK'], [1.00] ] ,
+    [ ['RLA', 'RUA', 'LUA', 'LLA', 'RKN_', 'RKN^', 'HIP', 'RH', 'RWR', 'RUA_', 'RUA^'], [1.00] ] ,
+    [ ['ACCELBACK', 'LUA_', 'LUA^', 'LWR', 'LH', 'R-SHOE', 'L-SHOE', 'IMUBACK', 'RLA', 'RUA', 'LUA'], [1.00] ] ,
+    [ ['LLA', 'RKN_', 'RKN^', 'HIP', 'RH', 'RWR', 'RUA_', 'RUA^', 'ACCELBACK', 'LUA_', 'LUA^'], [1.00] ] ,
+    #5 random cases of 12-view predictions
+    [ ['R-SHOE', 'L-SHOE', 'IMUBACK', 'RLA', 'RUA', 'LUA', 'LLA', 'RKN_', 'RKN^', 'HIP', 'RH', 'RWR'], [1.00] ] ,
+    [ ['RUA_', 'RUA^', 'ACCELBACK', 'LUA_', 'LUA^', 'LWR', 'LH', 'R-SHOE', 'L-SHOE', 'IMUBACK', 'RLA', 'RUA'], [1.00] ] ,
+    [ ['LUA', 'LLA', 'RKN_', 'RKN^', 'HIP', 'RH', 'RWR', 'RUA_', 'RUA^', 'ACCELBACK', 'LUA_', 'LUA^'], [1.00] ] ,
+    [ ['LWR', 'LH', 'R-SHOE', 'L-SHOE', 'IMUBACK', 'RLA', 'RUA', 'LUA', 'LLA', 'RKN_', 'RKN^', 'HIP'], [1.00] ] ,
+    [ ['RH', 'RWR', 'RUA_', 'RUA^', 'ACCELBACK', 'LUA_', 'LUA^', 'LWR', 'LH', 'R-SHOE', 'L-SHOE', 'IMUBACK'], [1.00] ] ,
+    #5 random cases of 13-view predictions
+    [ ['R-SHOE', 'L-SHOE', 'IMUBACK', 'RLA', 'RUA', 'LUA', 'LLA', 'RKN_', 'RKN^', 'HIP', 'RH', 'RWR', 'RUA_'], [1.00] ] ,
+    [ ['RUA^', 'ACCELBACK', 'LUA_', 'LUA^', 'LWR', 'LH', 'R-SHOE', 'L-SHOE', 'IMUBACK', 'RLA', 'RUA', 'LUA', 'LLA'], [1.00] ] ,
+    [ ['RKN_', 'RKN^', 'HIP', 'RH', 'RWR', 'RUA_', 'RUA^', 'ACCELBACK', 'LUA_', 'LUA^', 'LWR', 'LH', 'R-SHOE'], [1.00] ] ,
+    [ ['L-SHOE', 'IMUBACK', 'RLA', 'RUA', 'LUA', 'LLA', 'RKN_', 'RKN^', 'HIP', 'RH', 'RWR', 'RUA_', 'RUA^'], [1.00] ] ,
+    [ ['ACCELBACK', 'LUA_', 'LUA^', 'LWR', 'LH', 'R-SHOE', 'L-SHOE', 'IMUBACK', 'RLA', 'RUA', 'LUA', 'LLA', 'RKN_'], [1.00] ] ,
+    #5 random cases of 14-view predictions
+    [ ['R-SHOE', 'L-SHOE', 'IMUBACK', 'RLA', 'RUA', 'LUA', 'LLA', 'RKN_', 'RKN^', 'HIP', 'RH', 'RWR', 'RUA_', 'RUA^'], [1.00] ] ,
+    [ ['ACCELBACK', 'LUA_', 'LUA^', 'LWR', 'LH', 'R-SHOE', 'L-SHOE', 'IMUBACK', 'RLA', 'RUA', 'LUA', 'LLA', 'RKN_', 'RKN^'], [1.00] ] ,
+    [ ['HIP', 'RH', 'RWR', 'RUA_', 'RUA^', 'ACCELBACK', 'LUA_', 'LUA^', 'LWR', 'LH', 'R-SHOE', 'L-SHOE', 'IMUBACK', 'RLA'], [1.00] ] ,
+    [ ['RUA', 'LUA', 'LLA', 'RKN_', 'RKN^', 'HIP', 'RH', 'RWR', 'RUA_', 'RUA^', 'ACCELBACK', 'LUA_', 'LUA^', 'LWR'], [1.00] ] ,
+    [ ['LH', 'R-SHOE', 'L-SHOE', 'IMUBACK', 'RLA', 'RUA', 'LUA', 'LLA', 'RKN_', 'RKN^', 'HIP', 'RH', 'RWR', 'RUA_'], [1.00] ] ,
+    #5 random cases of 15-view predictions
+    [ ['R-SHOE', 'L-SHOE', 'IMUBACK', 'RLA', 'RUA', 'LUA', 'LLA', 'RKN_', 'RKN^', 'HIP', 'RH', 'RWR', 'RUA_', 'RUA^', 'ACCELBACK'], [1.00] ] ,
+    [ ['LUA_', 'LUA^', 'LWR', 'LH', 'R-SHOE', 'L-SHOE', 'IMUBACK', 'RLA', 'RUA', 'LUA', 'LLA', 'RKN_', 'RKN^', 'HIP', 'RH'], [1.00] ] ,
+    [ ['RWR', 'RUA_', 'RUA^', 'ACCELBACK', 'LUA_', 'LUA^', 'LWR', 'LH', 'R-SHOE', 'L-SHOE', 'IMUBACK', 'RLA', 'RUA', 'LUA', 'LLA'], [1.00] ] ,
+    [ ['RKN_', 'RKN^', 'HIP', 'RH', 'RWR', 'RUA_', 'RUA^', 'ACCELBACK',  'LUA_', 'LUA^',  'LWR',  'LH',  'R-SHOE',  'L-SHOE',  'IMUBACK'], [1.00] ] ,
+    [ ['RLA',  'RUA',  'LUA',  'LLA',  'RKN_',  'RKN^',  'HIP',  'RH',  'RWR',  'RUA_',  'RUA^',  'ACCELBACK',  'LUA_',  'LUA^',  'LWR'], [1.00] ] ,
+    #5 random cases of 16-view predictions
+    [ ['R-SHOE', 'L-SHOE', 'IMUBACK', 'RLA', 'RUA', 'LUA', 'LLA', 'RKN_', 'RKN^', 'HIP', 'RH', 'RWR', 'RUA_', 'RUA^', 'ACCELBACK', 'LUA_'], [1.00] ] ,
+    [ ['LUA^', 'LWR', 'LH', 'R-SHOE', 'L-SHOE', 'IMUBACK', 'RLA', 'RUA', 'LUA', 'LLA', 'RKN_', 'RKN^', 'HIP', 'RH', 'RWR', 'RUA_'], [1.00] ] ,
+    [ ['RUA^', 'ACCELBACK', 'LUA_', 'LUA^', 'LWR', 'LH', 'R-SHOE', 'L-SHOE', 'IMUBACK', 'RLA', 'RUA', 'LUA', 'LLA', 'RKN_', 'RKN^', 'HIP'], [1.00] ] ,
+    [ ['RH', 'RWR', 'RUA_',  'RUA^',  'ACCELBACK',  'LUA_',  'LUA^',  'LWR',  'LH',  'R-SHOE',  'L-SHOE',  'IMUBACK',  'RLA',  'RUA',  'LUA',  'LLA'], [1.00] ] ,
+    [ ['RKN^',  'HIP',  'RH',  'RWR',  'RUA_',  'RUA^',  'ACCELBACK',  'LUA_',  'LUA^',  'LWR',  'LH',  'R-SHOE',  'L-SHOE',  'IMUBACK',  'RLA',  'RUA'], [1.00] ] ,
+    #5 random cases of 17-view predictions
+    [ ['R-SHOE', 'L-SHOE', 'IMUBACK', 'RLA', 'RUA', 'LUA', 'LLA', 'RKN_', 'RKN^', 'HIP', 'RH', 'RWR', 'RUA_', 'RUA^', 'LUA_', 'LUA^', 'LWR'], [1.00] ] ,
+    [ ['R-SHOE', 'L-SHOE', 'RLA', 'RUA', 'LUA', 'LLA', 'RKN_', 'RKN^', 'HIP', 'RH', 'RWR', 'RUA_', 'RUA^', 'ACCELBACK', 'LUA_', 'LWR', 'LH'], [1.00] ] ,
+    [ ['R-SHOE', 'IMUBACK', 'RLA', 'RUA', 'LUA', 'LLA', 'RKN_', 'RKN^', 'HIP', 'RH', 'RWR', 'RUA_', 'ACCELBACK', 'LUA_', 'LUA^', 'LWR', 'LH'], [1.00] ] ,
+    [ ['R-SHOE', 'L-SHOE', 'IMUBACK', 'RLA', 'RUA', 'LUA', 'LLA', 'RKN_', 'HIP', 'RH', 'RWR', 'RUA^', 'ACCELBACK', 'LUA_', 'LUA^', 'LWR', 'LH'], [1.00] ] ,
+    [ ['R-SHOE', 'L-SHOE', 'RLA', 'RUA', 'LUA', 'LLA', 'RKN_', 'RKN^', 'HIP', 'RH', 'RWR', 'RUA_', 'RUA^', 'LUA_', 'LUA^', 'LWR', 'LH'] , [1.00] ] ,
+    #missing a single view
+    [ ['R-SHOE', 'L-SHOE', 'IMUBACK', 'RLA', 'RUA', 'LUA', 'LLA', 'RKN_', 'RKN^', 'HIP', 'RH', 'RWR', 'RUA_', 'RUA^', 'ACCELBACK', 'LUA_', 'LUA^', 'LWR'], [1.00] ],
+    [ ['R-SHOE', 'L-SHOE', 'IMUBACK', 'RLA', 'RUA', 'LUA', 'LLA', 'RKN_', 'RKN^', 'HIP', 'RH', 'RWR', 'RUA_', 'RUA^', 'ACCELBACK', 'LUA_', 'LUA^', 'LH'], [1.00] ] ,
+    [ ['R-SHOE', 'L-SHOE', 'IMUBACK', 'RLA', 'RUA', 'LUA', 'LLA', 'RKN_', 'RKN^', 'HIP', 'RH', 'RWR', 'RUA_', 'RUA^', 'ACCELBACK', 'LUA_', 'LWR', 'LH'], [1.00] ],
+    [ ['R-SHOE', 'L-SHOE', 'IMUBACK', 'RLA', 'RUA', 'LUA', 'LLA', 'RKN_', 'RKN^', 'HIP', 'RH', 'RWR', 'RUA_', 'RUA^', 'ACCELBACK', 'LUA^', 'LWR', 'LH'], [1.00] ],
+    [ ['R-SHOE', 'L-SHOE', 'IMUBACK', 'RLA', 'RUA', 'LUA', 'LLA', 'RKN_', 'RKN^', 'HIP', 'RH', 'RWR', 'RUA_', 'RUA^', 'LUA_', 'LUA^', 'LWR', 'LH'], [1.00] ], 
+    [ ['R-SHOE', 'L-SHOE', 'IMUBACK', 'RLA', 'RUA', 'LUA', 'LLA', 'RKN_', 'RKN^', 'HIP', 'RH', 'RWR', 'RUA_', 'ACCELBACK', 'LUA_', 'LUA^', 'LWR', 'LH'], [1.00] ],
+    [ ['R-SHOE', 'L-SHOE', 'IMUBACK', 'RLA', 'RUA', 'LUA', 'LLA', 'RKN_', 'RKN^', 'HIP', 'RH', 'RWR', 'RUA^', 'ACCELBACK', 'LUA_', 'LUA^', 'LWR', 'LH'] , [1.00] ],
+    [ ['R-SHOE', 'L-SHOE', 'IMUBACK', 'RLA', 'RUA', 'LUA', 'LLA', 'RKN_', 'RKN^', 'HIP', 'RH', 'RUA_', 'RUA^', 'ACCELBACK', 'LUA_', 'LUA^', 'LWR', 'LH'] , [1.00] ],
+    [ ['R-SHOE', 'L-SHOE', 'IMUBACK', 'RLA', 'RUA', 'LUA', 'LLA', 'RKN_', 'RKN^', 'HIP', 'RWR', 'RUA_', 'RUA^', 'ACCELBACK', 'LUA_', 'LUA^', 'LWR', 'LH'] , [1.00] ],
+    [ ['R-SHOE', 'L-SHOE', 'IMUBACK', 'RLA', 'RUA', 'LUA', 'LLA', 'RKN_', 'RKN^', 'RH', 'RWR', 'RUA_', 'RUA^', 'ACCELBACK', 'LUA_', 'LUA^', 'LWR', 'LH'] , [1.00] ],
+    [ ['R-SHOE', 'L-SHOE', 'IMUBACK', 'RLA', 'RUA', 'LUA', 'LLA', 'RKN_', 'HIP', 'RH', 'RWR', 'RUA_', 'RUA^', 'ACCELBACK', 'LUA_', 'LUA^', 'LWR', 'LH'] , [1.00] ],
+    [ ['R-SHOE', 'L-SHOE', 'IMUBACK', 'RLA', 'RUA', 'LUA', 'LLA', 'RKN^', 'HIP', 'RH', 'RWR', 'RUA_', 'RUA^', 'ACCELBACK', 'LUA_', 'LUA^', 'LWR', 'LH'] , [1.00] ],
+    [ ['R-SHOE', 'L-SHOE', 'IMUBACK', 'RLA', 'RUA', 'LUA', 'RKN_', 'RKN^', 'HIP', 'RH', 'RWR', 'RUA_', 'RUA^', 'ACCELBACK', 'LUA_', 'LUA^', 'LWR', 'LH'] , [1.00] ],
+    [ ['R-SHOE', 'L-SHOE', 'IMUBACK', 'RLA', 'RUA', 'LLA', 'RKN_', 'RKN^', 'HIP', 'RH', 'RWR', 'RUA_', 'RUA^', 'ACCELBACK', 'LUA_', 'LUA^', 'LWR', 'LH'] , [1.00] ],
+    [ ['R-SHOE', 'L-SHOE', 'IMUBACK', 'RLA', 'LUA', 'LLA', 'RKN_', 'RKN^', 'HIP', 'RH', 'RWR', 'RUA_', 'RUA^', 'ACCELBACK', 'LUA_', 'LUA^', 'LWR', 'LH'] , [1.00] ],
+    [ ['R-SHOE', 'L-SHOE', 'IMUBACK', 'RUA', 'LUA', 'LLA', 'RKN_', 'RKN^', 'HIP', 'RH', 'RWR', 'RUA_', 'RUA^', 'ACCELBACK', 'LUA_', 'LUA^', 'LWR', 'LH'] , [1.00] ],
+    [ ['R-SHOE', 'L-SHOE', 'RLA', 'RUA', 'LUA', 'LLA', 'RKN_', 'RKN^', 'HIP', 'RH', 'RWR', 'RUA_', 'RUA^', 'ACCELBACK', 'LUA_', 'LUA^', 'LWR', 'LH'] , [1.00] ],
+    [ ['R-SHOE', 'IMUBACK', 'RLA', 'RUA', 'LUA', 'LLA', 'RKN_', 'RKN^', 'HIP', 'RH', 'RWR', 'RUA_', 'RUA^', 'ACCELBACK', 'LUA_', 'LUA^', 'LWR', 'LH'] , [1.00] ],
+    [ ['L-SHOE', 'IMUBACK', 'RLA', 'RUA', 'LUA', 'LLA', 'RKN_', 'RKN^', 'HIP', 'RH', 'RWR', 'RUA_', 'RUA^', 'ACCELBACK', 'LUA_', 'LUA^', 'LWR', 'LH'] , [1.00] ],
+  ]
+  
+architecture:
+  encoders: 
+    -ALL:
+      model_type: tempcnn
+      dropout: 0.2
+      kernel_size: 3 #default value: 5
+      layer_size: 64 #default value: 128
+      n_layers: 4 #default value: 3
+      seq_len: 15
+      use_norm: False
+  predictive_model:
+    model_type: linear
+
+    use_norm_last: True
