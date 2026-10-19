@@ -1,4 +1,5 @@
 # CoMiss & FullCo: Multi-modal Co-Learning for Handling Missing Modalities
+[![DOI:10.1007/978-3-032-41086-3_41)](http://img.shields.io/badge/DOI-10.1007/978-3-032-41086-3_41-blue.svg)](https://doi.org/10.1007/978-3-032-41086-3_41)
 [![paper](https://img.shields.io/badge/arXiv-2607.24683-D12424)](https://www.arxiv.org/abs/2607.24683) 
 
 > Public repository of our work [*Co-Learning for Missing Arbitrary Modalities in Multi-modal Classification*](https://www.arxiv.org/abs/2607.24683) 
