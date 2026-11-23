@@ -41,3 +41,20 @@ All details to folder paths and configurations are inside the yaml files.
 
 ---
 
+
+# 🖊️ Citation
+
+Mena, Francisco, et al. "*Co-Learning for Missing Arbitrary Modalities in Multi-modal Classification*." International Conference on Discovery Science, 2026.
+```bibtex
+@inproceedings{mena2026co,
+  title={Co-Learning for Missing Arbitrary Modalities in Multi-modal Classification},
+  author={Mena, Francisco and Ienco, Dino and Interdonato, Roberto and Dantas, Cassio F and Besnard, Simon},
+  booktitle={International Conference on Discovery Science},
+  pages={638--653},
+  year={2026},
+  organization={Springer},
+  doi={10.1007/978-3-032-41086-3_41}
+}
+
+```
+
